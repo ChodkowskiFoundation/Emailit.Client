@@ -2,12 +2,23 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.1</TargetFramework>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageProjectUrl>https://github.com/ChodkowskiFoundation/Emailit.Client</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/ChodkowskiFoundation/Emailit.Client</RepositoryUrl>
+    <Description>This is an unofficial open-source HTTP client designed for use with the Emailit API.</Description>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Flurl" Version="4.0.0" />
     <PackageReference Include="Flurl.Http" Version="4.0.2" />
     <PackageReference Include="Microsoft.AspNetCore.StaticFiles" Version="2.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
 </Project>

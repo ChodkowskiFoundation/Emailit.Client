@@ -28,8 +28,15 @@ namespace Emailit.Client
         protected const string SENDIND_DOMAINS_CHECK_DNS_PATH = "check";
 
         protected string _apiKey;
-        protected string _baseUrl;
+        protected string _baseUrlString;
         protected string _version;
+
+        protected JsonSerializerOptions _jsonSerializerOptions = null;
+        protected readonly JsonSerializerOptions _defaultJsonSerializerOptions = new JsonSerializerOptions
+        {
+            Converters = { new CaseInsensitiveEnumConverter<EmailitCredentialType>() },
+            DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
+        };
 
         public EmailitClient(string apiKey) : this(new EmailitConfiguration { ApiKey = apiKey }) { }
 
@@ -40,11 +47,15 @@ namespace Emailit.Client
 
         public HttpCompletionOption DefualtHttpCompletionOption { get; set; }
 
-        public EmailitClient Configure(EmailitConfiguration configuration = null)
+        public JsonSerializerOptions JsonSerializerOptions => _jsonSerializerOptions ?? _defaultJsonSerializerOptions;
+
+        public EmailitClient Configure(
+            EmailitConfiguration configuration = null,
+            JsonSerializerOptions jsonSerializerOptions = null)
         {
             _apiKey = configuration?.ApiKey;
 
-            _baseUrl = string.IsNullOrWhiteSpace(configuration?.BaseUrl)
+            _baseUrlString = string.IsNullOrWhiteSpace(configuration?.BaseUrl)
                 ? DEFAULT_BASE_URL
                 : configuration.BaseUrl;
 
@@ -53,6 +64,21 @@ namespace Emailit.Client
                 : configuration.Version;
 
             DefualtHttpCompletionOption = configuration?.HttpCompletionOption ?? default;
+
+            if (jsonSerializerOptions != null)
+            {
+                return ConfigureJsonSerializerOptions(jsonSerializerOptions);
+            }
+            else
+            {
+                return this;
+            }
+        }
+
+        public EmailitClient ConfigureJsonSerializerOptions(
+            JsonSerializerOptions options)
+        {
+            _jsonSerializerOptions = options;
 
             return this;
         }
@@ -171,7 +197,7 @@ namespace Emailit.Client
 
         public EmailitClient UseBaseUrl(string baseUrl)
         {
-            _baseUrl = baseUrl ?? DEFAULT_BASE_URL;
+            _baseUrlString = baseUrl ?? DEFAULT_BASE_URL;
 
             return this;
         }
@@ -179,7 +205,7 @@ namespace Emailit.Client
         public EmailitClient UseConfiguration(EmailitConfiguration configuration)
         {
             _apiKey = configuration?.ApiKey;
-            _baseUrl = configuration?.BaseUrl ?? DEFAULT_BASE_URL;
+            _baseUrlString = configuration?.BaseUrl ?? DEFAULT_BASE_URL;
             _version = configuration?.Version ?? DEFAULT_VERSION;
 
             return this;
@@ -192,14 +218,10 @@ namespace Emailit.Client
             return this;
         }
 
-        protected virtual IFlurlRequest DefaultBaseUrl => new Url(_baseUrl)
+        protected virtual IFlurlRequest DefaultBaseUrl => new Url(_baseUrlString)
             .WithSettings(s =>
             {
-                s.JsonSerializer = new DefaultJsonSerializer(new JsonSerializerOptions
-                {
-                    Converters = { new CaseInsensitiveEnumConverter<EmailitCredentialType>() },
-                    DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull,
-                });
+                s.JsonSerializer = new DefaultJsonSerializer(JsonSerializerOptions);
             })
             .WithOAuthBearerToken(_apiKey)
             .EnsureApiKeyIsProvided()

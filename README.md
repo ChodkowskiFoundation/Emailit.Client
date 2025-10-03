@@ -1,7 +1,7 @@
 # Emailit.Client
 This is an unofficial open-source HTTP client designed for use with the [Emailit API](https://docs.emailit.com/).
 
-The client is based on [Flur](https://github.com/tmenier/Flurl).
+The client is based on [Flurl](https://github.com/tmenier/Flurl).
 
 ## Basic usage
 
