@@ -6,6 +6,8 @@
     <PackageProjectUrl>https://github.com/ChodkowskiFoundation/Emailit.Client</PackageProjectUrl>
     <RepositoryUrl>https://github.com/ChodkowskiFoundation/Emailit.Client</RepositoryUrl>
     <Description>This is an unofficial open-source HTTP client designed for use with the Emailit API.</Description>
+    <Copyright>Konstanty Chodkowski Foundation</Copyright>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
